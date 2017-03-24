@@ -31,14 +31,17 @@ busWala.prototype.startListeningUser = function() {
 
   requests.on('child_added', function(snapshot){
       temp.processRequest(snapshot);
+      temp.removerequest(snapshot.key);
   });
 
   requests.on('child_removed', function(snapshot){
     console.log('request removed');
   });
+
 };
 
 busWala.prototype.processRequest = function(snapshot){
+
   temp = this;
   snap = snapshot.val();
   console.log(snapshot.val());
@@ -58,13 +61,21 @@ busWala.prototype.processRequest = function(snapshot){
           userid: snap['id'],
           name: route, 
           lat: busarr[i].lat,
-          log: busarr[i].log
-
+          log: busarr[i].log,
+          lastupdated: busarr[i].lastupdated
         });
       }
     }
   }
 };
+
+busWala.prototype.removerequest = function(key) {
+  temp = this;
+  requestdb = temp.database.ref('requests/' + key);
+  requestdb.set({
+    null: null
+  });
+}
 
 busWala.prototype.processUserData = function(snap) {
 
