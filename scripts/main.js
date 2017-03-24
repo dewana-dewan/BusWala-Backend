@@ -1,3 +1,5 @@
+var busarr = [];
+
 function busWala() {
   this.initFirebase();
 }
@@ -6,29 +8,52 @@ busWala.prototype.initFirebase = function() {
   // body...
   this.database = firebase.database();
   this.storage = firebase.storage();
-  this.startListening();
+  this.startListeningUser();
 };
 
-busWala.prototype.startListening = function() {
-  var userdb = this.database.ref('data');
+busWala.prototype.startListeningUser = function() {
+  
+  var userdb = this.database.ref('userData');
   var temp = this;
+
   userdb.on('child_added', function(snapshot){
-      console.log(snapshot.val());
-      temp.updateBusdb(snapshot.val());
+      snap = snapshot.val();
+      snap['user'] = snapshot.key;
+      console.log(snap);
+      temp.processUserData(snap);
   });
+  
   userdb.on('child_removed', function(snapshot){
+      console.log('child removed');
+  });
 
+};
+
+busWala.prototype.processUserData = function(snap) {
+
+  var busdb = this.database.ref('busData');
+  
+  busdb.on('child_added', function(snapshot){
+      console.log(snapshot.key);
+      busarr.push(snapshot.val());
+      name(snap);
   });
 };
 
-busWala.prototype.updateBusdb = function() {
-  var busdb = this.database.ref('busData');
-  var newbus = busdb.push();
-  newbus.set({
-    name:"asdf",
-    value:"afdsd"
-  })
-};
+function name(snap) {
+    for (var i = 0; i < busarr.length ; i++) {
+      var route;
+      var busNo;
+
+      temp = busarr[i]['key'].indexof('|');
+      route = busarr[i]['key'].slice(temp);
+      console.log(route);
+      // if(findpercentagediff(busarr[i], snpValue) <= 10) {
+
+      // }
+  }
+}  
+
 
 window.onload = function() {
   window.busWala = new busWala();
