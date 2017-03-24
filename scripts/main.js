@@ -49,17 +49,52 @@ busWala.prototype.validateData = function (snap) {
       var ptr = busarr[i].key.indexOf('|');
       route = busarr[i].key.slice(0,ptr);
       busno = busarr[i].key.slice(ptr + 1);
-      console.log(route, busno);
+      udata = busarr[i].data;
+      // console.log(route, busno);
       if(route == ubusroute) {
-        if( retmindist(snap, busarr[i], 001000) )
+        console.log(route, busno);
+        if( retmindist(snap, busarr[i], 10000) ) {
+          if(busarr[i]['data'] == undefined || busarr[i]['data'][(snap['user']).toString()] == null) {
+            if(busarr[i]['data'] == undefined)
+              busarr[i]['data'] = {};
+            busarr[i]['data'][(snap['user']).toString()] = {
+              lastupdated: snap['lastupdated'],
+              lat: snap['lat'],
+              log: snap['log']
+            }
+          }
+          var avglat = 0;
+          var avglog = 0;
+          var n = 0;
+          for (var key in busarr[i]['data']) {
+            if(busarr[i]['data'].hasOwnProperty(key))
+              if(retmindist(busarr[i]['data'][key], busarr[i], 1000)) {
+                avglog += busarr[i]['data'][key]['log'];
+                avglat += busarr[i]['data'][key]['lat'];
+                n++;
+              }
+          }
+          avglat = avglat / n;
+          avglog = avglog / n;
+
+          var busdb = this.database.ref('busData/' + busarr[i].key);
+          busdb.set({
+            lastupdated: snap.lastupdated,
+            lat: avglat,
+            log: avglog,
+            data: busarr[i]['data']
+          });
+        }
 
       }
     }
 }  
 
 function retmindist(a, b, dst) {
-  if(abs(a['long'] - b['long']) <= dst && abs(a['long'] - b['long']) <= dst )
+  if(Math.abs(a['log'] - b['log']) <= dst && Math.abs(a['lat'] - b['lat']) <= dst )
     return true;
+  else
+    return false;
 }
 
 window.onload = function() {
