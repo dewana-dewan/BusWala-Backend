@@ -9,11 +9,13 @@ busWala.prototype.initFirebase = function() {
   this.database = firebase.database();
   this.storage = firebase.storage();
   this.startListeningUser();
+  this.processUserData();
 };
 
 busWala.prototype.startListeningUser = function() {
   
   var userdb = this.database.ref('userData');
+  var requests = this.database.ref('requests');
   var temp = this;
 
   userdb.on('child_added', function(snapshot){
@@ -24,9 +26,44 @@ busWala.prototype.startListeningUser = function() {
   });
   
   userdb.on('child_removed', function(snapshot){
-      console.log('child removed');
+      console.log('user child removed');
   });
 
+  requests.on('child_added', function(snapshot){
+      temp.processRequest(snapshot);
+  });
+
+  requests.on('child_removed', function(snapshot){
+    console.log('request removed');
+  });
+};
+
+busWala.prototype.processRequest = function(snapshot){
+  temp = this;
+  snap = snapshot.val();
+  console.log(snapshot.val());
+  var busdb = this.database.ref('busData');
+  var t = 100;
+
+  for (var i = 0; i < busarr.length; i++) {
+    ptr = busarr[i].key.indexOf('|');
+    route = busarr[i].key.slice(0,ptr);
+    busno = busarr[i].key.slice(ptr + 1);
+    console.log(route, snap['name']);
+    if(route == snap['name']) {
+      if(retmindist(busarr[i], snap, 1000)) {
+        console.log('found bus');
+        var responsedb = temp.database.ref('response/' + busarr[i].key);
+        responsedb.set({
+          userid: snap['id'],
+          name: route, 
+          lat: busarr[i].lat,
+          log: busarr[i].log
+
+        });
+      }
+    }
+  }
 };
 
 busWala.prototype.processUserData = function(snap) {
@@ -37,10 +74,18 @@ busWala.prototype.processUserData = function(snap) {
   busdb.on('child_added', function(snapshot){
       bsnap = snapshot.val();
       bsnap['key'] = snapshot.key;
-      busarr.push(bsnap);
-      temp.validateData(snap);
+      flag = 0;
+      for (var i = busarr.length - 1; i >= 0; i--) {
+        if (busarr[i]['key'] == bsnap['key'])
+          flag = 1;
+      }
+      if(flag == 0)
+        busarr.push(bsnap);
+      if(snap != null)
+        temp.validateData(snap);
   });
 };
+
 
 busWala.prototype.validateData = function (snap) {
     var ubusroute = snap['busroute'];
@@ -50,7 +95,7 @@ busWala.prototype.validateData = function (snap) {
       route = busarr[i].key.slice(0,ptr);
       busno = busarr[i].key.slice(ptr + 1);
       udata = busarr[i].data;
-      // console.log(route, busno);
+      
       if(route == ubusroute) {
         console.log(route, busno);
         if( retmindist(snap, busarr[i], 10000) ) {
