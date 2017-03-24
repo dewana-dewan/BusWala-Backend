@@ -32,28 +32,35 @@ busWala.prototype.startListeningUser = function() {
 busWala.prototype.processUserData = function(snap) {
 
   var busdb = this.database.ref('busData');
+  temp = this;
   
   busdb.on('child_added', function(snapshot){
-      console.log(snapshot.key);
-      busarr.push(snapshot.val());
-      name(snap);
+      bsnap = snapshot.val();
+      bsnap['key'] = snapshot.key;
+      busarr.push(bsnap);
+      temp.validateData(snap);
   });
 };
 
-function name(snap) {
+busWala.prototype.validateData = function (snap) {
+    var ubusroute = snap['busroute'];
+
     for (var i = 0; i < busarr.length ; i++) {
-      var route;
-      var busNo;
+      var ptr = busarr[i].key.indexOf('|');
+      route = busarr[i].key.slice(0,ptr);
+      busno = busarr[i].key.slice(ptr + 1);
+      console.log(route, busno);
+      if(route == ubusroute) {
+        if( retmindist(snap, busarr[i], 001000) )
 
-      temp = busarr[i]['key'].indexof('|');
-      route = busarr[i]['key'].slice(temp);
-      console.log(route);
-      // if(findpercentagediff(busarr[i], snpValue) <= 10) {
-
-      // }
-  }
+      }
+    }
 }  
 
+function retmindist(a, b, dst) {
+  if(abs(a['long'] - b['long']) <= dst && abs(a['long'] - b['long']) <= dst )
+    return true;
+}
 
 window.onload = function() {
   window.busWala = new busWala();
