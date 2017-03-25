@@ -58,11 +58,11 @@ busWala.prototype.processRequest = function(snapshot){
         console.log('found bus');
         var responsedb = temp.database.ref('response/' + busarr[i].key);
         responsedb.set({
-          userid: snap['id'],
+          userid: snap['userid'],
           name: route, 
           lat: busarr[i].lat,
           log: busarr[i].log,
-          lastupdated: busarr[i].lastupdated
+          lastupdated: busarr[i].lastupdated.toString()
         });
       }
     }
@@ -109,12 +109,21 @@ busWala.prototype.validateData = function (snap) {
       
       if(route == ubusroute) {
         console.log(route, busno);
-        if( retmindist(snap, busarr[i], 10000) ) {
+
+        var myPosition = new google.maps.LatLng(snap['lat'], snap['log']);
+        if(google.maps.geometry.poly.isLocationOnEdge(myPosition, window["_" +route.toString()], 1.00))
+          console.log('in path', route, snap['user']);
+        else {
+          console.log("not in path returning back");
+          return;
+        }
+        
+        if( retmindist(snap, busarr[i], 1) ) {
           if(busarr[i]['data'] == undefined || busarr[i]['data'][(snap['user']).toString()] == null) {
             if(busarr[i]['data'] == undefined)
               busarr[i]['data'] = {};
             busarr[i]['data'][(snap['user']).toString()] = {
-              lastupdated: snap['lastupdated'],
+              lastupdated: snap['lastupdated'].toString(),
               lat: snap['lat'],
               log: snap['log']
             }
@@ -135,7 +144,7 @@ busWala.prototype.validateData = function (snap) {
 
           var busdb = this.database.ref('busData/' + busarr[i].key);
           busdb.set({
-            lastupdated: snap.lastupdated,
+            lastupdated: snap.lastupdated.toString(),
             lat: avglat,
             log: avglog,
             data: busarr[i]['data']

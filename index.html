@@ -38,8 +38,62 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+<div id="map">
+</div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4-w7XEcjkONIYhqgmQF1XzXE4DpfFgKA&libraries=geometry">
+</script>
+<script>
 
+var mapOptions = {
+    zoom: 5,
+    // center: myPosition,
+    mapTypeId: 'terrain'
+  };
+
+  var map = new google.maps.Map(document.getElementById('map'),
+      mapOptions);
+
+var _5C = new google.maps.Polyline({
+    path: [
+      new google.maps.LatLng(25.430555, 81.769392),
+      new google.maps.LatLng(25.431069, 81.769677),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.430633, 81.771737),
+      new google.maps.LatLng(25.430224, 81.771879),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.429984, 81.771439),
+      new google.maps.LatLng(25.430243, 81.770556),
+      new google.maps.LatLng(25.430141, 81.770046)
+    ]
+  });
+var _5A = new google.maps.Polyline({
+    path: [
+      new google.maps.LatLng(25.430555, 81.769392),
+      new google.maps.LatLng(25.431069, 81.769677),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.430633, 81.771737),
+      new google.maps.LatLng(25.430224, 81.771879),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.429984, 81.771439),
+      new google.maps.LatLng(25.430243, 81.770556),
+      new google.maps.LatLng(25.430141, 81.770046)
+    ]
+  });
+var _5B = new google.maps.Polyline({
+    path: [
+      new google.maps.LatLng(25.430555, 81.769392),
+      new google.maps.LatLng(25.431069, 81.769677),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.430633, 81.771737),
+      new google.maps.LatLng(25.430224, 81.771879),
+      new google.maps.LatLng(25.431180, 81.770632),
+      new google.maps.LatLng(25.429984, 81.771439),
+      new google.maps.LatLng(25.430243, 81.770556),
+      new google.maps.LatLng(25.430141, 81.770046)
+    ]
+  });
+</script>
 <script src="https://www.gstatic.com/firebasejs/3.7.3/firebase.js"></script> <script>
 // Initialize Firebase
 var config = {
