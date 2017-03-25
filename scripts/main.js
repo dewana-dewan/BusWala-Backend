@@ -57,13 +57,16 @@ busWala.prototype.processRequest = function(snapshot){
       if(retmindist(busarr[i], snap, 1000)) {
         console.log('found bus');
         var responsedb = temp.database.ref('response/' + busarr[i].key);
-        responsedb.set({
+        obja = {
           userid: snap['userid'],
           name: route, 
           lat: busarr[i].lat,
           log: busarr[i].log,
           lastupdated: busarr[i].lastupdated.toString()
-        });
+        };
+        console.log(obja);
+        responsedb.set(obja);
+        return;
       }
     }
   }
@@ -138,10 +141,12 @@ busWala.prototype.validateData = function (snap) {
                 avglat += busarr[i]['data'][key]['lat'];
                 n++;
               }
+              console.log(busarr[i], avglog, avglat, n);
           }
-          avglat = avglat / n;
-          avglog = avglog / n;
-
+          if(n != 0) {
+            avglat = avglat / n;
+            avglog = avglog / n;
+          }
           var busdb = this.database.ref('busData/' + busarr[i].key);
           busdb.set({
             lastupdated: snap.lastupdated.toString(),
